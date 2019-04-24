@@ -25,6 +25,8 @@ int board[GRID_X][GRID_Y];
 //contains the coords of the active block
 int activeBlockPoints[4][2];
 
+
+//Function headers because bleh
 void addPoints(int pointsToAdd);
 int checkLineClears();
 void clearLine(int row);
@@ -37,9 +39,18 @@ void removeBlockFromBoard();
 void rotateBlock();
 void moveBlock(int isMoveRight);
 
+
 void keyboard(unsigned char key, int x, int y) {
 
-	//TODO do stuff here on key input
+	switch (key) {
+
+	case 'w':
+	case 'a':
+	case 's':
+	case 'd':
+	default:
+		break;
+	}
 
 	glutPostRedisplay(); //redraws the scene instantly
 }

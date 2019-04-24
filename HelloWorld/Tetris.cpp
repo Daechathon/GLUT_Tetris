@@ -25,12 +25,34 @@ int board[GRID_X][GRID_Y];
 //contains the coords of the active block
 int activeBlockPoints[4][2];
 
+void addPoints(int pointsToAdd);
+int checkLineClears();
+void clearLine(int row);
+void incrementCounters();
+void moveBlockDown();
+int blockPlace();
+void createNewBlock();
+void addBlockToBoard();
+void removeBlockFromBoard();
+void rotateBlock();
+void moveBlock(int isMoveRight);
 
 void keyboard(unsigned char key, int x, int y) {
 
 	//TODO do stuff here on key input
 
 	glutPostRedisplay(); //redraws the scene instantly
+}
+
+void displayFcn() {
+
+	//TODO implement rendering function
+}
+
+void init() {
+
+	/* Set color of display window to white. */
+	glClearColor(1.0, 1.0, 1.0, 0.0);
 }
 
 void tetris() {
@@ -56,7 +78,6 @@ void tetris() {
 
 	removeBlockFromBoard();
 	incrementCounters();
-
 }
 
 int main(int argc, char ** argv) {
@@ -75,7 +96,7 @@ int main(int argc, char ** argv) {
 
 
 
-	//init();
+	init();
 
 
 	glutKeyboardFunc(keyboard);

@@ -10,9 +10,10 @@
 //#include <math.h>
 
 #define GRID_X 10
-#define GRID_Y 10 
+#define GRID_Y 20 
+#define BLOCK_SIZE 30
 
-GLsizei winWidth = 600, winHeight = 600;
+GLsizei winWidth = BLOCK_SIZE * GRID_X, winHeight = BLOCK_SIZE * GRID_Y;
 
 int speed = 1;
 int speedThreshold = 30;

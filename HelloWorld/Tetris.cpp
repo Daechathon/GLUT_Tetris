@@ -6,8 +6,8 @@
  * */
  
 #include "Tetris.h"
-#include <stdlib.h>     /* srand, rand */
-#include <time.h>       /* time */
+#include <stdlib.h>
+#include <time.h>
 #include <string>
 
 GLsizei winWidth = GRID_X * BLOCK_SIZE, winHeight = GRID_Y * BLOCK_SIZE;
@@ -20,8 +20,8 @@ public:
 	GLfloat matrix[4][3];
 };
 
-int speed = 1;
-int speedThreshold = 100;
+int speed = 3;
+int speedThreshold = 300;
 int speedCounter = 0;
 int score = 0;
 
@@ -43,8 +43,7 @@ int blockArray[7][4][2] = {
 };
 
 
-/** spawns a new block at the top
- * */
+//spawns a new block at the top
 void createNewBlock() {
 
 	srand(time(NULL));
@@ -59,7 +58,7 @@ void createNewBlock() {
 	}
 }
 
-
+//takes keyboard inputs
 void keyboard(unsigned char key, int x, int y) {
 
 	switch (key) {
@@ -83,6 +82,7 @@ void keyboard(unsigned char key, int x, int y) {
 	glutPostRedisplay(); //redraws the scene instantly
 }
 
+//drops the block to the bottom instantly
 void hardDrop() {
 
 	while(!blockPlace()) {
@@ -108,6 +108,7 @@ void displayFcn() {
 	draw();
 }
 
+//main logic function
 void tetris() {
 
 	Sleep(10);
@@ -252,7 +253,6 @@ bool blockPlace() {
 
 
 /** Adds the block to the board
- * --note: Must be removed before doing more logic
  * */
 void addBlockToBoard() {
 
@@ -273,13 +273,13 @@ void removeBlockFromBoard() {
 }
 
 
-//Emily is implementing
+//Emily is working on this at the moment, would make it much more playable
 void rotateBlock() {
 
 	//rotate the activeBlock
 }
 
-
+//moves the block left or right one space
 void moveBlock(bool isMoveRight) {
 
 	int tempBlock[4][2];
@@ -321,6 +321,7 @@ void moveBlock(bool isMoveRight) {
 	}
 }
 
+//initialization stuff
 void init(void) {
 	glClearColor(1.0, 1.0, 1.0, 0.0);
 	glMatrixMode(GL_PROJECTION);
@@ -333,11 +334,11 @@ void init(void) {
 			board[i][j] = 0;
 		}
 	}
-
 	createNewBlock();
 }
 
 
+//helper function
 block createBlock(int x, int y) {
 	block block;
 
@@ -361,7 +362,7 @@ block createBlock(int x, int y) {
 }
 
 
-
+//draws a single square block
 void drawBlock(block block) {
 	//draw a square of solid colour
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -406,22 +407,8 @@ void drawActiveBlock(int activeBlock[4][2]) {
 
 }
 
-//the main draw function tested with mock arrays
-/*
-void draw(void) {
-	glClear(GL_COLOR_BUFFER_BIT);
-	int background[GRID_X][GRID_Y];
-	background[0][1] = 1;
-	background[3][4] = 1;
-	drawBackground(background);
 
-	int activeBlock[4][2] = { { 5,0 },{ 5,1 },{ 5,2 },{ 6,1 } };
-
-	drawActiveBlock(activeBlock);
-	glFlush();
-}
-*/
-
+//draw function
 void draw() {
 
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -432,6 +419,7 @@ void draw() {
 	glFlush();
 }
 
+//reshape function
 void reshapeFcn(GLint newWidth, GLint newHeight) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -439,20 +427,3 @@ void reshapeFcn(GLint newWidth, GLint newHeight) {
 
 	glClear(GL_COLOR_BUFFER_BIT);
 }
-
-/*
-void main(int argc, char ** argv) {
-
-
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-	glutInitWindowPosition(50, 50);
-	glutInitWindowSize(winWidth, winHeight);
-	glutCreateWindow("TETRIS");
-
-	init();
-	glutDisplayFunc(draw);
-	glutReshapeFunc(reshapeFcn);
-	glutMainLoop();
-}
-*/

@@ -1,11 +1,13 @@
 /**
- * Author: Brandon Aldridge
+ * Author: Brandon Aldridge, Emily Sublette
  *
  * Tetris implementing GLUT
  * Created for the final for Graphics
  * */
  
 #include "Tetris.h"
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
 
 GLsizei winWidth = GRID_X * BLOCK_SIZE, winHeight = GRID_Y * BLOCK_SIZE;
 GLfloat xMin = 0.0, xMax = 300.0, yMin = 0.0, yMax = 600.0;
@@ -20,21 +22,40 @@ public:
 int speed = 1;
 int speedThreshold = 100;
 int speedCounter = 0;
-
 int score = 0;
 
 //boolean array basically
 int board[GRID_X][GRID_Y + NEW_BLOCK_BUFFER];
 
-//contains the coords of the active block
-int activeBlockPoints[4][2] = { { 5,10 },{ 5,11 },{ 5,12 },{ 6,11 } };
+//contains the coords of the active falling block
+int activeBlockPoints[4][2];
+
+//relative coords for all tetrominoes
+int blockArray[7][4][2] = { 
+	{ {0, 0}, {1, 0}, {2, 0}, {3, 0} }, //I
+	{ {0, 1}, {0, 0}, {1, 0}, {2, 0} }, //J
+	{ {0, 0}, {1, 0}, {2, 0}, {2, 1} }, //L
+	{ {1, 0}, {1, 1}, {2, 0}, {2, 1} }, //O
+	{ {0, 0}, {1, 0}, {1, 1}, {2, 1} }, //S
+	{ {0, 0}, {1, 0}, {1, 1}, {2, 0} }, //T
+	{ {0, 1}, {1, 1}, {1, 0}, {2, 0} }, //Z
+};
 
 
 /** spawns a new block at the top
  * */
 void createNewBlock() {
 
+	srand(time(NULL));
+	int randomIndex = rand() % 7 + 0;
 	
+	//x + GRID_X / 2 - 2, y + GRID_Y + NEW_BLOCK_BUFFER - 2
+
+	for (int i = 0; i < 4; i++) {
+		
+		activeBlockPoints[i][0] = blockArray[randomIndex][i][0] + GRID_X / 2 - 2;
+		activeBlockPoints[i][1] = blockArray[randomIndex][i][1] + GRID_Y + NEW_BLOCK_BUFFER - 2;
+	}
 }
 
 
@@ -63,16 +84,9 @@ void keyboard(unsigned char key, int x, int y) {
 
 void hardDrop() {
 
-	while(!(blockPlace() > 0)) {
+	while(!blockPlace()) {
 
 		moveBlockDown();
-	}
-
-	int pointsToAdd = checkLineClears();
-	if (pointsToAdd > 0) {
-
-		addPoints(pointsToAdd);
-
 	}
 
 	glutPostRedisplay();
@@ -85,14 +99,15 @@ void displayFcn() {
 
 void tetris() {
 
+	Sleep(10);
 
-	if (blockPlace() > 0) {
+	if (blockPlace()) {
 
 		int pointsToAdd = checkLineClears();
 		if (pointsToAdd > 0) {
 
 			addPoints(pointsToAdd);
-			
+			speed = 1 + score;
 		}
 		glutPostRedisplay();
 	}
@@ -105,8 +120,8 @@ void tetris() {
 	}
 
 	incrementCounters();
-	Sleep(10);
 }
+
 
 int main(int argc, char ** argv) {
 
@@ -142,12 +157,15 @@ int checkLineClears() {
 
 	int numberOfClears = 0;
 
-	for (int i = GRID_Y - 1; i > 0; i--) {
+	for (int i = GRID_Y - 1; i >= 0; i--) {
 
 		int lineCount = 0;
 		for (int j = 0; j < GRID_X; j++) {
 
-			lineCount += board[i][j];
+			if (board[j][i] != 0) {
+
+				lineCount++;
+			}
 		}
 
 		if (lineCount >= GRID_X) {
@@ -202,7 +220,7 @@ void moveBlockDown() {
 /**checks if the block would clip with an existing block if it would move
  * if it does, place the block
  * */
-int blockPlace() {
+bool blockPlace() {
 
 	for (int i = 0; i < 4; i++) {
 
@@ -213,11 +231,11 @@ int blockPlace() {
 
 			addBlockToBoard();
 			createNewBlock();
-			return 1;
+			return true;
 		}
 	}
 
-	return 0;
+	return false;
 }
 
 
@@ -295,6 +313,16 @@ void init(void) {
 	glClearColor(1.0, 1.0, 1.0, 0.0);
 	glMatrixMode(GL_PROJECTION);
 	gluOrtho2D(xMin, xMax, yMin, yMax);
+
+	for (int i = 0; i < GRID_X; i++) {
+
+		for (int j = 0; j < GRID_Y + NEW_BLOCK_BUFFER; j++) {
+
+			board[i][j] = 0;
+		}
+	}
+
+	createNewBlock();
 }
 
 

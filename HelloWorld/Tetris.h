@@ -14,7 +14,7 @@ int checkLineClears();
 void clearLine(int row);
 void incrementCounters();
 void moveBlockDown();
-int blockPlace();
+bool blockPlace();
 void createNewBlock();
 void addBlockToBoard();
 void removeBlockFromBoard();

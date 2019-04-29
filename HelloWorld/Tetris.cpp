@@ -4,50 +4,47 @@
  * Tetris implementing GLUT
  * Created for the final for Graphics
  * */
+ 
+#include "Tetris.h"
 
-#include <GL/glut.h> 
-#include <stdlib.h> 
-//#include <math.h>
+GLsizei winWidth = GRID_X * BLOCK_SIZE, winHeight = GRID_Y * BLOCK_SIZE;
+GLfloat xMin = 0.0, xMax = 300.0, yMin = 0.0, yMax = 600.0;
 
-#define GRID_X 10
-#define GRID_Y 20 
-#define BLOCK_SIZE 30
-
-GLsizei winWidth = BLOCK_SIZE * GRID_X, winHeight = BLOCK_SIZE * GRID_Y;
+//the corners of the drawn polygon and the centre of it relative to the window, not the other blocks
+class block {
+public:
+	GLfloat centreX, centreY;
+	GLfloat matrix[4][3];
+};
 
 int speed = 1;
-int speedThreshold = 30;
+int speedThreshold = 100;
 int speedCounter = 0;
 
+int score = 0;
+
 //boolean array basically
-int board[GRID_X][GRID_Y];
+int board[GRID_X][GRID_Y + NEW_BLOCK_BUFFER];
 
 //contains the coords of the active block
-int activeBlockPoints[4][2];
-
-
-//Function headers because bleh
-void addPoints(int pointsToAdd);
-int checkLineClears();
-void clearLine(int row);
-void incrementCounters();
-void moveBlockDown();
-int blockPlace();
-void createNewBlock();
-void addBlockToBoard();
-void removeBlockFromBoard();
-void rotateBlock();
-void moveBlock(int isMoveRight);
-
+int activeBlockPoints[4][2] = { { 5,10 },{ 5,11 },{ 5,12 },{ 6,11 } };
 
 void keyboard(unsigned char key, int x, int y) {
 
 	switch (key) {
 
 	case 'w':
+		rotateBlock();
+		break;
 	case 'a':
-	case 's':
+		moveBlock(false);
+		break;
 	case 'd':
+		moveBlock(true);
+		break;
+	case ' ':
+		hardDrop();
+		break;
 	default:
 		break;
 	}
@@ -55,18 +52,18 @@ void keyboard(unsigned char key, int x, int y) {
 	glutPostRedisplay(); //redraws the scene instantly
 }
 
-void displayFcn() {
+void hardDrop() {
 
-	//TODO implement rendering function
+
 }
 
-void init() {
+void displayFcn() {
 
-	/* Set color of display window to white. */
-	glClearColor(1.0, 1.0, 1.0, 0.0);
+	draw();
 }
 
 void tetris() {
+
 
 	if (blockPlace() > 0) {
 
@@ -74,48 +71,37 @@ void tetris() {
 		if (pointsToAdd > 0) {
 
 			addPoints(pointsToAdd);
+			
 		}
+		glutPostRedisplay();
 	}
 
-	if (speed >= speedThreshold) {
+	if (speedCounter >= speedThreshold) {
 
 		speedCounter = 0;
 		moveBlockDown();
+		glutPostRedisplay();
 	}
 
-	addBlockToBoard();
-
-	glutPostRedisplay();
-
-	removeBlockFromBoard();
 	incrementCounters();
+	Sleep(10);
 }
 
 int main(int argc, char ** argv) {
 
 	glutInit(&argc, argv);
-
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-
 	glutInitWindowPosition(50, 50);
-
 	glutInitWindowSize(winWidth, winHeight);
-
-
-
 	glutCreateWindow("TETRIS");
-
-
 
 	init();
 
-
 	glutKeyboardFunc(keyboard);
 	glutIdleFunc(tetris);
-	glutDisplayFunc(displayFcn); //TODO implement display function
-	//glutReshapeFunc(winReshapeFcn);
-
-
+	glutDisplayFunc(displayFcn); 
+	glutReshapeFunc(reshapeFcn);
+	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);
 
 	glutMainLoop();
 
@@ -126,7 +112,7 @@ int main(int argc, char ** argv) {
 //adds a number of points to the score
 void addPoints(int pointsToAdd) {
 
-	//TODO add points
+	score += pointsToAdd;
 }
 
 
@@ -162,7 +148,7 @@ void clearLine(int row) {
 
 		for (int x = 0; x < GRID_X; x++) {
 
-			board[x][y] = board[x + 1][y];
+			board[x][y] = board[x][y + 1];
 		}
 	}
 
@@ -177,7 +163,7 @@ void clearLine(int row) {
  * */
 void incrementCounters() {
 
-	speedCounter++;
+	speedCounter += speed;
 }
 
 
@@ -214,7 +200,7 @@ int blockPlace() {
 }
 
 
-/** creates a new block at the top
+/** spawns a new block at the top
  * */
 void createNewBlock() {
 
@@ -245,17 +231,24 @@ void removeBlockFromBoard() {
 }
 
 
-//INTERRUPT -- implement after everything else works
+//Emily is implementing
 void rotateBlock() {
 
 	//rotate the activeBlock
 }
 
 
-//INTERRUPT
-void moveBlock(int isMoveRight) {
+void moveBlock(bool isMoveRight) {
 
 	int tempBlock[4][2];
+
+	for (int i = 0; i < 4; i++) {
+
+		for (int j = 0; j < 2; j++) {
+
+			tempBlock[i][j] = activeBlockPoints[i][j];
+		}
+	}
 
 	for (int i = 0; i < 4; i++) {
 
@@ -269,7 +262,7 @@ void moveBlock(int isMoveRight) {
 		}
 		else {
 
-			if (tempBlock[i][0] + 1 <= 0) {
+			if (tempBlock[i][0] - 1 < 0) {
 
 				return;
 			}
@@ -285,3 +278,129 @@ void moveBlock(int isMoveRight) {
 		}
 	}
 }
+
+void init(void) {
+	glClearColor(1.0, 1.0, 1.0, 0.0);
+	glMatrixMode(GL_PROJECTION);
+	gluOrtho2D(xMin, xMax, yMin, yMax);
+}
+
+
+block createBlock(int x, int y) {
+	block block;
+
+	block.centreX = (BLOCK_SIZE / 2.0) + (x * BLOCK_SIZE);
+	block.centreY = (BLOCK_SIZE / 2.0) + (y * BLOCK_SIZE);
+
+	//bottom left vertex
+	block.matrix[0][0] = block.centreX - 15;
+	block.matrix[0][1] = block.centreY - 15;
+	//bottom right vertex
+	block.matrix[1][0] = block.centreX + 15;
+	block.matrix[1][1] = block.centreY - 15;
+	//top right vertex
+	block.matrix[2][0] = block.centreX + 15;
+	block.matrix[2][1] = block.centreY + 15;
+	//top left vertex
+	block.matrix[3][0] = block.centreX - 15;
+	block.matrix[3][1] = block.centreY + 15;
+
+	return block;
+}
+
+
+
+void drawBlock(block block) {
+	//draw a square of solid colour
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBegin(GL_POLYGON);
+	glColor3f(1.0, 0.0, 0.0);
+	for (GLint i = 0; i < 4; i++) {
+		glVertex2f(block.matrix[i][0], block.matrix[i][1]);
+	}
+	glEnd();
+
+	//draw a border
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glLineWidth(2);
+	glBegin(GL_POLYGON);
+	glColor3f(0.0, 0.0, 0.0);
+	for (GLint i = 0; i < 4; i++) {
+		glVertex2f(block.matrix[i][0], block.matrix[i][1]);
+	}
+	glEnd();
+}
+
+//draw all blocks already on the board
+void drawBackground(int background[GRID_X][GRID_Y + NEW_BLOCK_BUFFER]) {
+
+	for (int k = 0; k < GRID_Y; k++) {
+		for (int i = 0; i < GRID_X; i++) {
+			if (background[i][k] == 1) {
+				block block = createBlock(i, k);
+				drawBlock(block);
+			}
+		}
+	}
+}
+
+//draw the currently falling block
+void drawActiveBlock(int activeBlock[4][2]) {
+
+	for (int i = 0; i < 4; i++) {
+		block current = createBlock(activeBlock[i][0], activeBlock[i][1]);
+		drawBlock(current);
+	}
+
+}
+
+//the main draw function tested with mock arrays
+/*
+void draw(void) {
+	glClear(GL_COLOR_BUFFER_BIT);
+	int background[GRID_X][GRID_Y];
+	background[0][1] = 1;
+	background[3][4] = 1;
+	drawBackground(background);
+
+	int activeBlock[4][2] = { { 5,0 },{ 5,1 },{ 5,2 },{ 6,1 } };
+
+	drawActiveBlock(activeBlock);
+	glFlush();
+}
+*/
+
+void draw() {
+
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	drawBackground(board);
+
+	drawActiveBlock(activeBlockPoints);
+	glFlush();
+}
+
+void reshapeFcn(GLint newWidth, GLint newHeight) {
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(xMin, xMax, yMin, yMax);
+
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+/*
+void main(int argc, char ** argv) {
+
+
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowPosition(50, 50);
+	glutInitWindowSize(winWidth, winHeight);
+	glutCreateWindow("TETRIS");
+
+	init();
+	glutDisplayFunc(draw);
+	glutReshapeFunc(reshapeFcn);
+	glutMainLoop();
+}
+*/

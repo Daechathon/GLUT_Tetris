@@ -1,4 +1,1 @@
-﻿  Tetris.cpp
-c:\users\drago\documents\school\graphics\tetris\helloworld\tetris.cpp(292): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-c:\users\drago\documents\school\graphics\tetris\helloworld\tetris.cpp(293): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-  HelloWorld.vcxproj -> C:\Users\drago\Documents\School\Graphics\Tetris\x64\Debug\Tetris.exe
+﻿  HelloWorld.vcxproj -> C:\Users\drago\Documents\School\Graphics\Tetris\x64\Debug\Tetris.exe

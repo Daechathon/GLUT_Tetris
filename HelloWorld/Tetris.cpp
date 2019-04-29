@@ -29,6 +29,15 @@ int board[GRID_X][GRID_Y + NEW_BLOCK_BUFFER];
 //contains the coords of the active block
 int activeBlockPoints[4][2] = { { 5,10 },{ 5,11 },{ 5,12 },{ 6,11 } };
 
+
+/** spawns a new block at the top
+ * */
+void createNewBlock() {
+
+	
+}
+
+
 void keyboard(unsigned char key, int x, int y) {
 
 	switch (key) {
@@ -54,7 +63,19 @@ void keyboard(unsigned char key, int x, int y) {
 
 void hardDrop() {
 
+	while(!(blockPlace() > 0)) {
 
+		moveBlockDown();
+	}
+
+	int pointsToAdd = checkLineClears();
+	if (pointsToAdd > 0) {
+
+		addPoints(pointsToAdd);
+
+	}
+
+	glutPostRedisplay();
 }
 
 void displayFcn() {
@@ -198,15 +219,6 @@ int blockPlace() {
 
 	return 0;
 }
-
-
-/** spawns a new block at the top
- * */
-void createNewBlock() {
-
-	//TODO implement
-}
-
 
 
 /** Adds the block to the board

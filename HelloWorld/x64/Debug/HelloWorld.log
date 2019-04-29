@@ -1,5 +1,5 @@
 ﻿  Tetris.cpp
-c:\users\drago\documents\school\graphics\tetris\helloworld\tetris.cpp(49): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\drago\documents\school\graphics\tetris\helloworld\tetris.cpp(332): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-c:\users\drago\documents\school\graphics\tetris\helloworld\tetris.cpp(333): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\drago\documents\school\graphics\tetris\helloworld\tetris.cpp(50): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\drago\documents\school\graphics\tetris\helloworld\tetris.cpp(344): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\drago\documents\school\graphics\tetris\helloworld\tetris.cpp(345): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
   HelloWorld.vcxproj -> C:\Users\drago\Documents\School\Graphics\Tetris\x64\Debug\Tetris.exe

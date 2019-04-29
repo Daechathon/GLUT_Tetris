@@ -8,6 +8,7 @@
 #include "Tetris.h"
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
+#include <string>
 
 GLsizei winWidth = GRID_X * BLOCK_SIZE, winHeight = GRID_Y * BLOCK_SIZE;
 GLfloat xMin = 0.0, xMax = 300.0, yMin = 0.0, yMax = 600.0;
@@ -89,6 +90,16 @@ void hardDrop() {
 		moveBlockDown();
 	}
 
+	int pointsToAdd = checkLineClears();
+	if (pointsToAdd > 0) {
+
+		addPoints(pointsToAdd);
+		std::string stringScore = "TETRIS - score: " + std::to_string(score);
+		glutSetWindowTitle(stringScore.c_str());
+
+		speed = 1 + score;
+	}
+
 	glutPostRedisplay();
 }
 
@@ -107,6 +118,7 @@ void tetris() {
 		if (pointsToAdd > 0) {
 
 			addPoints(pointsToAdd);
+			glutSetWindowTitle("TETRIS - score: " + score);
 			speed = 1 + score;
 		}
 		glutPostRedisplay();
@@ -129,7 +141,7 @@ int main(int argc, char ** argv) {
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
 	glutInitWindowPosition(50, 50);
 	glutInitWindowSize(winWidth, winHeight);
-	glutCreateWindow("TETRIS");
+	glutCreateWindow("TETRIS - score: 0");
 
 	init();
 
